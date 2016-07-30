@@ -1,58 +1,88 @@
+var crypto = require('crypto');
 var request = require('request');
+var q = require('q');
 
-module.exports = {
+var util = {
 
-    encrypt: function() {
-        request.get(
-            {
-                url: 'https://api.keyarmory.com/v1/encryption/token',
-                headers: {
-                    'x-api-key': 'f0e4c2f76c58916ec258f246851bea091d14d4247a2fc3e18694461b1816e13b'
-                }
-            }, function(err, res, body) {
-                var payload = JSON.parse(body).payload;
+    encrypt: function(data, key) {
+        var cipher = crypto.createCipher('aes-256-cbc', key);
+        var hash = cipher.update(data, 'utf8', 'base64');
+        hash += cipher.final('base64');
 
-                var plain_text = Math.random().toString();
-                var encrypted_data = crypt.encrypt(plain_text, payload.key);
-                var encrypted_string = payload.key_id + ':' + payload.token + ':' + encrypted_data;
-
-                db.fake_table
-                    .create({
-                        pt_data: plain_text,
-                        ct_data: encrypted_string
-                    });
-            });
+        return hash;
     },
 
-    decrypt: function() {
-        db.fake_table
-            .findAll()
-            .then(function(stuff) {
-                stuff.forEach(function(thing) {
-                    var pieces = thing.ct_data.split(':');
-                    var key_id = pieces[0];
-                    var token = pieces[1];
-                    var encrypted_data = pieces[2];
+    decrypt: function(data, key) {
+        var decipher = crypto.createDecipher('aes-256-cbc', key);
+        var decrypted_data = decipher.update(data, 'base64', 'utf8');
+        decrypted_data += decipher.final('utf8');
 
-                    request.post(
-                        {
-                            url: 'https://api.keyarmory.com/v1/encryption/key',
-                            headers: {
-                                'x-api-key': 'f0e4c2f76c58916ec258f246851bea091d14d4247a2fc3e18694461b1816e13b'
-                            },
-                            form: {
-                                key_id: key_id,
-                                token: token
-                            }
-                        }, function(err, res, body) {
-                            var payload = JSON.parse(body).payload;
-
-                            var decrypted_data = crypt.decrypt(encrypted_data, payload.key);
-
-                            console.log(decrypted_data);
-                        });
-                });
-            });
+        return decrypted_data;
     }
 
+};
+
+var keyarmory = function(options) {
+    this.api_key = options.api_key;
+    this.base_url = 'https://api.keyarmory.com/v1';
+
+    if (!this.api_key) throw new Error('Key Armory API Key Required');
+};
+
+keyarmory.prototype.encrypt = function(data) {
+    var promise = q.defer();
+
+    request.get(
+        {
+            url: this.base_url + '/encryption/token',
+            headers: {
+                'x-api-key': this.api_key
+            }
+        }, function(err, res, body) {
+            if (err) return promise.reject(err);
+
+            var payload = JSON.parse(body).payload;
+
+            var encrypted_data = util.encrypt(data, payload.key);
+            var encrypted_string = payload.key_id + ':' + payload.token + ':' + encrypted_data;
+
+            return promise.resolve(encrypted_string);
+        });
+
+    return promise.promise;
+};
+
+keyarmory.prototype.decrypt = function(encrypted_string) {
+    var pieces = encrypted_string.split(':');
+    var key_id = pieces[0];
+    var token = pieces[1];
+    var encrypted_data = pieces[2];
+
+    var promise = q.defer();
+
+    request.post(
+        {
+            url: this.base_url + '/encryption/key',
+            headers: {
+                'x-api-key': this.api_key
+            },
+            form: {
+                key_id: key_id,
+                token: token
+            }
+        }, function(err, res, body) {
+            if (err) return promise.reject(err);
+
+            var payload = JSON.parse(body).payload;
+
+            var decrypted_data = util.decrypt(encrypted_data, payload.key);
+
+            return promise.resolve(decrypted_data);
+        });
+
+    return promise.promise;
+};
+
+module.exports = function(options) {
+    return new keyarmory(options);
 };
