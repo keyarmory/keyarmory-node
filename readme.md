@@ -9,7 +9,7 @@ npm install keyarmory
 
 ### Initialization
 ```js
-var keyarmory = require('../index')({
+var keyarmory = require('keyarmory')({
     api_key: 'your_api_key_here'
 });
 ```

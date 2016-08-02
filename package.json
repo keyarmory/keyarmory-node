@@ -1,6 +1,6 @@
 {
     "name": "keyarmory",
-    "version": "0.0.2",
+    "version": "0.0.3",
     "description": "Key Armory client library for node.js",
     "main": "index.js",
     "scripts": {

@@ -15,8 +15,8 @@ nock(keyarmory.base_url)
         timestamp: '2016-07-30T20:24:14+00:00',
         status: 'ok',
         payload: {
-            token: 'YH9VFJGzdsHmYrTw85CWcd4YBYpaC64NBrPIxmB+tIUTuCsrDo73Ey3F3JWa93ln',
-            key: '7ac8945b-b75e-408c-89fa-90bef40ab43e',
+            token: 'Hu1diMt2Eox8MKnVwtieHq6HDqG0gH/ZzWiJjC0jUAjvPUin76uhHU8NQelYkIIzrhrYyTKmmh0M/A5iRT4xSZWnpDMeG72Jw0EH/+wQ3Uk=',
+            key: '996cbbe55d67340f9a12986e79921586fa2ebd6b565831821bd612dacf360840',
             key_id: 1
         }
     }));
@@ -29,7 +29,7 @@ nock(keyarmory.base_url)
         timestamp: '2016-07-30T20:24:14+00:00',
         status: 'ok',
         payload: {
-            key: '7ac8945b-b75e-408c-89fa-90bef40ab43e'
+            key: '996cbbe55d67340f9a12986e79921586fa2ebd6b565831821bd612dacf360840'
         }
     }));
 
@@ -40,7 +40,7 @@ describe('keyarmory', function() {
         return keyarmory
             .encrypt(data_to_encrypt)
             .then(function(encrypted_string) {
-                encrypted_string.length.should.equal(111);
+                encrypted_string.length.should.equal(155);
 
                 return keyarmory
                     .decrypt(encrypted_string)
