@@ -60,15 +60,14 @@ keyarmory.prototype.decrypt = function(encrypted_string) {
 
     var promise = q.defer();
 
-    request.post(
+    request.get(
         {
-            url: this.base_url + '/encryption/key',
+            url:
+                this.base_url + '/encryption/key' +
+                '?key_id=' + key_id +
+                '&token' + token,
             headers: {
                 'x-api-key': this.api_key
-            },
-            form: {
-                key_id: key_id,
-                token: token
             }
         }, function(err, res, body) {
             if (err) return promise.reject(err);
