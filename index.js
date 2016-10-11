@@ -65,7 +65,7 @@ keyarmory.prototype.decrypt = function(encrypted_string) {
             url:
                 this.base_url + '/encryption/key' +
                 '?key_id=' + key_id +
-                '&token' + token,
+                '&token=' + token,
             headers: {
                 'x-api-key': this.api_key
             }

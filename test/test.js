@@ -22,7 +22,7 @@ nock(keyarmory.base_url)
     }));
 
 nock(keyarmory.base_url)
-    .get('/encryption/key')
+    .get('/encryption/key?key_id=1&token=Hu1diMt2Eox8MKnVwtieHq6HDqG0gH/ZzWiJjC0jUAjvPUin76uhHU8NQelYkIIzrhrYyTKmmh0M/A5iRT4xSZWnpDMeG72Jw0EH/+wQ3Uk=')
     .reply(200, JSON.stringify({
         name: 'Key Armory API',
         version: 1,
