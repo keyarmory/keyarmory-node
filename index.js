@@ -44,7 +44,7 @@ keyarmory.prototype.encrypt = function(data) {
             var payload = JSON.parse(body).payload;
 
             var encrypted_data = util.encrypt(data, payload.key);
-            var encrypted_string = payload.key_id + ':' + payload.token + ':' + encrypted_data;
+            var encrypted_string = 'ka:' + payload.key_id + ':' + payload.token + ':' + encrypted_data;
 
             return promise.resolve(encrypted_string);
         });
@@ -54,9 +54,9 @@ keyarmory.prototype.encrypt = function(data) {
 
 keyarmory.prototype.decrypt = function(encrypted_string) {
     var pieces = encrypted_string.split(':');
-    var key_id = pieces[0];
-    var token = pieces[1];
-    var encrypted_data = pieces[2];
+    var key_id = pieces[1];
+    var token = pieces[2];
+    var encrypted_data = pieces[3];
 
     var promise = q.defer();
 

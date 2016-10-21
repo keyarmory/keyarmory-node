@@ -40,7 +40,7 @@ describe('keyarmory', function() {
         return keyarmory
             .encrypt(data_to_encrypt)
             .then(function(encrypted_string) {
-                encrypted_string.length.should.equal(155);
+                encrypted_string.length.should.equal(158);
 
                 return keyarmory
                     .decrypt(encrypted_string)
