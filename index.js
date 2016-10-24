@@ -1,5 +1,5 @@
 var crypto = require('crypto');
-var request = require('request');
+var request = require('request-promise');
 var q = require('q');
 
 var util = {
@@ -30,26 +30,22 @@ var keyarmory = function(options) {
 };
 
 keyarmory.prototype.encrypt = function(data) {
-    var promise = q.defer();
-
-    request.get(
-        {
+    return request
+        .get({
             url: this.base_url + '/encryption/token',
             headers: {
                 'x-api-key': this.api_key
-            }
-        }, function(err, res, body) {
-            if (err) return promise.reject(err);
-
-            var payload = JSON.parse(body).payload;
+            },
+            resolveWithFullResponse: true,
+            simple: false
+        })
+        .then(function(res) {
+            var payload = JSON.parse(res.body).payload;
 
             var encrypted_data = util.encrypt(data, payload.key);
-            var encrypted_string = 'ka:' + payload.key_id + ':' + payload.token + ':' + encrypted_data;
 
-            return promise.resolve(encrypted_string);
+            return 'ka:' + payload.key_id + ':' + payload.token + ':' + encrypted_data;
         });
-
-    return promise.promise;
 };
 
 keyarmory.prototype.decrypt = function(encrypted_string) {
@@ -58,28 +54,23 @@ keyarmory.prototype.decrypt = function(encrypted_string) {
     var token = pieces[2];
     var encrypted_data = pieces[3];
 
-    var promise = q.defer();
-
-    request.get(
-        {
+    return request
+        .get({
             url:
                 this.base_url + '/encryption/key' +
                 '?key_id=' + key_id +
-                '&token=' + token,
+                '&token=' + encodeURIComponent(token),
             headers: {
                 'x-api-key': this.api_key
-            }
-        }, function(err, res, body) {
-            if (err) return promise.reject(err);
+            },
+            resolveWithFullResponse: true,
+            simple: false
+        })
+        .then(function(res) {
+            var payload = JSON.parse(res.body).payload;
 
-            var payload = JSON.parse(body).payload;
-
-            var decrypted_data = util.decrypt(encrypted_data, payload.key);
-
-            return promise.resolve(decrypted_data);
+            return util.decrypt(encrypted_data, payload.key);
         });
-
-    return promise.promise;
 };
 
 module.exports = function(options) {

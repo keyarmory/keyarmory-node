@@ -15,19 +15,20 @@
         "decryption",
         "keys"
     ],
-    "author": "Brian Seymour",
+    "author": "Key Armory Team",
     "license": "ISC",
     "bugs": {
         "url": "https://github.com/keyarmory/keyarmory-node/issues"
     },
     "homepage": "https://github.com/keyarmory/keyarmory-node#readme",
     "devDependencies": {
-        "nock": "8.0.0",
+        "mocha": "3.1.2",
         "should": "10.0.0"
     },
     "dependencies": {
         "q": "1.4.1",
         "request": "2.58.0",
+        "request-promise": "4.1.1",
         "uuid": "2.0.2"
     }
 }
